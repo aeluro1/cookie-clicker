@@ -1,12 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { addCookie, getCookies } from "../firebaseDB";
+import { setCookie, getUserCookies, getUsers, db } from "../firebaseDB";
 import cookie from "../assets/cookie.png";
-import { collection, doc, onSnapshot } from "firebase/firestore";
-import { auth, login } from "../firebaseAuth";
+import { auth } from "../firebaseAuth";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Button from "../components/Button";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const styles = StyleSheet.create({
   container: {
@@ -50,6 +50,23 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: "80%",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 10
+  },
+  scrollViewInner: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap"
+  },
+  boardCol: {
+    flex: 1
+  },
+  text: {
+    fontSize: 20,
+    overflow: "hidden"
   }
 });
 
@@ -65,25 +82,39 @@ export default function Home({ navigation }) {
   const incCount = () => {
     setCount(count + 1);
     if (auth.currentUser) {
-      addCookie();
+      setCookie(count + 1);
     }
   };
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setUsers(await getCookies());
+      const allUsers = await getUsers();
+      const sortedUsers = allUsers.sort((a, b) => b.numCookie - a.numCookie);
+      setUsers(sortedUsers);
     };
     fetchUsers().catch((error) => console.error(error));
-;
+
+    const loadCount = async() => {
+      setCount(await getUserCookies());
+    };
+
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
+        loadCount();
       }
+      setUser(user);
     });
 
-    return unsub;
+    const unsubSnap = onSnapshot(collection(db, "cookies"), () => {
+      fetchUsers().catch((error) => console.error(error));
+    });
+
+    const clean = () => {
+      unsub();
+      unsubSnap();
+    };
+
+    return clean;
   }, []);
 
   const zoomIn = () => {
@@ -119,7 +150,7 @@ export default function Home({ navigation }) {
           />
         </TouchableHighlight>
         <View style={styles.dataContainer}>
-          {!user ? (
+          {!auth.currentUser ? (
             <Button
               title="Login"
               onPress={() => navigation.navigate("Login")}
@@ -128,7 +159,7 @@ export default function Home({ navigation }) {
           ) : (
             <Button
               title="Logout"
-              onPress={() => signOut(auth).then(() => {console.log(`Logged out: ${user.email}`)}).catch((err) => {console.error(err.msg)})}
+              onPress={() => signOut(auth).then(() => {setCount(0) && console.log(`Logged out: ${user.email}`)}).catch((err) => {console.error(err.msg)})}
               style={styles.btn}
             />
           )}
@@ -137,9 +168,15 @@ export default function Home({ navigation }) {
             onPress={() => navigation.navigate("Feedback")}
             style={styles.btn}
           />
-          <Text>Leaderboard</Text>
           <ScrollView style={styles.scrollView}>
-            {users && users.map((user) => <Text>{user.name}</Text>)}
+            <View style={styles.scrollViewInner}>
+              <View style={styles.boardCol}>
+                {users && users.map((user) => <Text style={styles.text} key={user.email}>{user.email}</Text>)}
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                {users && users.map((user) => <Text style={styles.text} key={user.email}>{user.numCookie}</Text>)}
+              </View>
+            </View>
           </ScrollView>
           <StatusBar style="auto" />
         </View>

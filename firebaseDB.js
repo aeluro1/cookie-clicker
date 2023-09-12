@@ -4,23 +4,29 @@ import { auth } from "./firebaseAuth";
 
 const db = getFirestore(app);
 
-async function getCookies() {
+async function getUsers() {
   const cookiesSnapshot = await getDocs(collection(db, "cookies"));
   const cookiesList = cookiesSnapshot.docs.map(doc => doc.data());
   return cookiesList;
 }
 
-async function addCookie() {
+async function getUserCookies() {
+  const uid = auth.currentUser.uid;
+  const docRef = doc(db, "cookies", uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data().numCookie;
+  } else {
+    return 0;
+  }
+}
+
+async function setCookie(numCookie) {
   try {
     const uid = auth.currentUser.uid;
     const docRef = doc(db, "cookies", uid);
-    const docSnap = await getDoc(docRef);
-    let numCookie = 0;
-    if (docSnap.exists()) {
-      numCookie = docSnap.data().numCookie;
-    }
-    await setDoc(docRef, { email: auth.currentUser.email, numCookie: numCookie + 1 });
-    console.log(`Cookie added for user: ${docRef.id}`);
+    await setDoc(docRef, { email: auth.currentUser.email, numCookie: numCookie });
+    console.log(`Cookie set for user: ${docRef.id}`);
   } catch (e) {
     console.error(`Error adding cookie: ${e}`);
   }
@@ -35,4 +41,4 @@ async function postFeedback(feedback) {
   }
 }
 
-export { addCookie, getCookies, postFeedback };
+export { setCookie, getUserCookies, getUsers, postFeedback, db };
