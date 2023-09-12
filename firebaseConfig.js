@@ -1,7 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,23 +24,5 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
 
-async function getUsers(db) {
-  const usersCol = collection(db, "users");
-  const userSnapshot = await getDocs(usersCol);
-  const userList = userSnapshot.docs.map(doc => doc.data());
-  return userList;
-}
-
-async function addUser(db, user) {
-  try {
-    const docRef = await addDoc(collection(db, "users"), user);
-    console.log(`Document added w/ ID: ${docRef.id}`);
-  } catch (e) {
-    console.error(`Error adding document: ${e}`);
-  }
-}
-
-export { db, getUsers, addUser };
+export { app };
