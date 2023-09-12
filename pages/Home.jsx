@@ -71,6 +71,10 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "white",
     fontWeight: "bold"
+  },
+  activeUser: {
+    fontStyle: "italic",
+    color: "limegreen"
   }
 });
 
@@ -177,10 +181,10 @@ export default function Home({ navigation }) {
               <View>
                 <Text style={[styles.text, styles.header]}>Leaderboard</Text>
               </View>
-              {users && users.map((user) => (
-                <View key={user.email} style={styles.boardRow}>
-                  <Text style={styles.text}>{user.email}</Text>
-                  <Text style={styles.text}>{user.numCookie}</Text>
+              {users && users.map((u) => (
+                <View key={u.email} style={styles.boardRow}>
+                  <Text style={[styles.text, user?.email === u.email && styles.activeUser]}>{u.email}</Text>
+                  <Text style={[styles.text, user?.email === u.email && styles.activeUser]}>{u.numCookie}</Text>
                 </View>
               ))}
             </ScrollView>
