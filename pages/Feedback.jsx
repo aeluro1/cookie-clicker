@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { postFeedback, db } from "../firebaseDB";
+import { postFeedback } from "../firebaseDB";
 import { useState } from "react";
 import Button from "../components/Button";
 import TextField from "../components/TextField";
@@ -28,16 +28,16 @@ const styles = StyleSheet.create({
 });
 
 export default function Feedback({ navigation }) {
-  const [name, setName] = useState("");
+  const [fb, setFb] = useState("");
   const [msg, setMsg] = useState("");
 
   const submitHandler = () => {
-    if (!name) {
+    if (!fb) {
       setMsg("Content required");
       return;
     }
-    postFeedback(db, { name: name});
-    setName("");
+    postFeedback(fb);
+    setFb("");
     setMsg("");
     navigation.goBack();
   };
@@ -45,14 +45,14 @@ export default function Feedback({ navigation }) {
   return (
     <View style={styles.container}>
       <TextField
-        onChangeText={setName}
-        value={name}
+        onChangeText={setFb}
+        value={fb}
         style={styles.input}
         multiline
       />
       <Button
         title="Submit"
-        handler={submitHandler}
+        onPress={submitHandler}
         style={styles.btn}
       />
       {msg && <Text>{msg}</Text>}

@@ -15,18 +15,18 @@ const styles = StyleSheet.create({
   }
 });
 
-const navTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: "transparent"
-  }
-};
+// const navTheme = {
+//   ...DefaultTheme,
+//   colors: {
+//     ...DefaultTheme.colors,
+//     background: "transparent"
+//   }
+// };
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationContainer theme={navTheme}>
+      <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
             name="Home"

@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { db, getUsers } from "../firebaseDB";
+import { addCookie, getCookies } from "../firebaseDB";
 import cookie from "../assets/cookie.png";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { auth, login } from "../firebaseAuth";
@@ -64,11 +64,14 @@ export default function Home({ navigation }) {
 
   const incCount = () => {
     setCount(count + 1);
+    if (auth.currentUser) {
+      addCookie();
+    }
   };
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setUsers(await getUsers(db));
+      setUsers(await getCookies());
     };
     fetchUsers().catch((error) => console.error(error));
 ;
@@ -106,7 +109,7 @@ export default function Home({ navigation }) {
           onPressIn={zoomIn}
           onPressOut={zoomOut}
           underlayColor="transparent"
-          activeOpacity="1"
+          activeOpacity={1}
           style={styles.cookieContainer}
         >
           <Image
