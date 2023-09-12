@@ -4,19 +4,29 @@ import Home from "./pages/Home";
 import Feedback from "./pages/Feedback";
 import Login from "./pages/Login";
 import { SafeAreaView, StyleSheet } from "react-native";
+import { DefaultTheme } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: DefaultTheme.colors.background
   }
 });
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "transparent"
+  }
+};
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationContainer>
+      <NavigationContainer theme={navTheme}>
         <Stack.Navigator>
           <Stack.Screen
             name="Home"

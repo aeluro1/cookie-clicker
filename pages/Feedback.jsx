@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { addUser, db } from "../firebaseDB";
+import { postFeedback, db } from "../firebaseDB";
 import { useState } from "react";
 import Button from "../components/Button";
 import TextField from "../components/TextField";
@@ -36,7 +36,7 @@ export default function Feedback({ navigation }) {
       setMsg("Content required");
       return;
     }
-    addUser(db, { name: name});
+    postFeedback(db, { name: name});
     setName("");
     setMsg("");
     navigation.goBack();

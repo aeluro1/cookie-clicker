@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Dimensions, Image, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { db, getUsers } from "../firebaseDB";
 import cookie from "../assets/cookie.png";
 import { collection, doc, onSnapshot } from "firebase/firestore";
@@ -13,26 +13,29 @@ const styles = StyleSheet.create({
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "blue",
     alignItems: "center",
-    justifyContent: "start"
+    justifyContent: "start",
+    backgroundColor: "inherit"
   },
   infoContainer: {
     // flex: 1,
     alignItems: "center",
     width: "100%",
     padding: 30,
-    backgroundColor: "red"
   },
   cookieContainer: {
     // flex: 1,
-    width: "100%",
-    backgroundColor: "green"
+    width: Dimensions.get("window").width * 0.9,
+    height: Dimensions.get("window").width * 0.9,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  cookie: {
+    objectFit: "contain"
   },
   dataContainer: {
     flex: 1,
     width: "100%",
-    backgroundColor: "yellow",
     justifyContent: "start",
     alignItems: "center",
     gap: 10,
@@ -41,15 +44,12 @@ const styles = StyleSheet.create({
   btn: {
     width: "80%"
   },
-  cookie: {
-    width: Dimensions.get("window").width * 0.9,
-    height: Dimensions.get("window").width * 0.9,
-    backgroundColor: "green",
-    objectFit: "contain"
-  },
   title: {
     fontSize: 50,
     fontWeight: "bold"
+  },
+  scrollView: {
+    width: "80%",
   }
 });
 
@@ -57,6 +57,14 @@ export default function Home({ navigation }) {
   const [count, setCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
+  const [btnSize, setBtnSize] = useState({
+    width: Dimensions.get("window").width * 0.9,
+    height: Dimensions.get("window").width * 0.9
+  });
+
+  const incCount = () => {
+    setCount(count + 1);
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -75,17 +83,36 @@ export default function Home({ navigation }) {
     return unsub;
   }, []);
 
+  const zoomIn = () => {
+    setBtnSize({
+      width: Dimensions.get("window").width * 0.8,
+      height: Dimensions.get("window").width * 0.8
+    });
+  };
+  const zoomOut = () => {
+    setBtnSize({
+      width: Dimensions.get("window").width * 0.9,
+      height: Dimensions.get("window").width * 0.9
+    });
+  };
+
   return (
     <View style={styles.container}>
         <View style={styles.infoContainer}>
           <Text style={styles.title}>Score: {count}</Text>
         </View>
-        <TouchableHighlight onPress={() => setCount(count + 1)}>
+        <TouchableHighlight
+          onPress={incCount}
+          onPressIn={zoomIn}
+          onPressOut={zoomOut}
+          underlayColor="transparent"
+          activeOpacity="1"
+          style={styles.cookieContainer}
+        >
           <Image
             source={cookie}
-            style={styles.cookie}
+            style={[styles.cookie, btnSize]}
             resizeMode="contain"
-            onPress={() => setCount(count + 1)}
           />
         </TouchableHighlight>
         <View style={styles.dataContainer}>
@@ -107,7 +134,10 @@ export default function Home({ navigation }) {
             onPress={() => navigation.navigate("Feedback")}
             style={styles.btn}
           />
-          {users && users.map((user) => <Text>{user.name}</Text>)}
+          <Text>Leaderboard</Text>
+          <ScrollView style={styles.scrollView}>
+            {users && users.map((user) => <Text>{user.name}</Text>)}
+          </ScrollView>
           <StatusBar style="auto" />
         </View>
       </View>
