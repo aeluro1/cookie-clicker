@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { setCookie, getUserCookies, getUsers, db } from "../firebaseDB";
-import cookie from "../assets/cookie.png";
+import cookie from "../assets/chocoCookie.png";
 import { auth } from "../firebaseAuth";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Button from "../components/Button";
