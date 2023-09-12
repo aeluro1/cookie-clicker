@@ -75,6 +75,10 @@ const styles = StyleSheet.create({
   activeUser: {
     fontStyle: "italic",
     color: "limegreen"
+  },
+  rank: {
+    fontWeight: "bold",
+    width: 30
   }
 });
 
@@ -181,9 +185,10 @@ export default function Home({ navigation }) {
               <View>
                 <Text style={[styles.text, styles.header]}>Leaderboard</Text>
               </View>
-              {users && users.map((u) => (
+              {users && users.map((u, idx) => (
                 <View key={u.email} style={styles.boardRow}>
-                  <Text style={[styles.text, user?.email === u.email && styles.activeUser]}>{u.email}</Text>
+                  <Text style={[styles.text, styles.rank, user?.email === u.email && styles.activeUser]}>{idx + 1}</Text>
+                  <Text style={[styles.text, { flex: 1 }, user?.email === u.email && styles.activeUser]}>{u.email}</Text>
                   <Text style={[styles.text, user?.email === u.email && styles.activeUser]}>{u.numCookie}</Text>
                 </View>
               ))}
