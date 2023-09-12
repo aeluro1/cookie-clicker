@@ -48,25 +48,29 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: "bold"
   },
-  scrollView: {
+  scrollViewContainer: {
     width: "80%",
+    height: "100%",
     backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10
   },
-  scrollViewInner: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "nowrap"
+  scrollView: {
+
   },
-  boardCol: {
-    flex: 1
+  boardRow: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   text: {
     fontSize: 20,
     overflow: "hidden"
+  },
+  header: {
+    backgroundColor: "white",
+    fontWeight: "bold"
   }
 });
 
@@ -168,16 +172,19 @@ export default function Home({ navigation }) {
             onPress={() => navigation.navigate("Feedback")}
             style={styles.btn}
           />
-          <ScrollView style={styles.scrollView}>
-            <View style={styles.scrollViewInner}>
-              <View style={styles.boardCol}>
-                {users && users.map((user) => <Text style={styles.text} key={user.email}>{user.email}</Text>)}
+          <View style={styles.scrollViewContainer}>
+            <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
+              <View>
+                <Text style={[styles.text, styles.header]}>Leaderboard</Text>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
-                {users && users.map((user) => <Text style={styles.text} key={user.email}>{user.numCookie}</Text>)}
-              </View>
-            </View>
-          </ScrollView>
+              {users && users.map((user) => (
+                <View key={user.email} style={styles.boardRow}>
+                  <Text style={styles.text}>{user.email}</Text>
+                  <Text style={styles.text}>{user.numCookie}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
           <StatusBar style="auto" />
         </View>
       </View>
